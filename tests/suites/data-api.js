@@ -1,4 +1,8 @@
-module('DATA-API');
+module('DATA-API',{
+    teardown: function(){
+        $('.bootstrap-datetimepicker-widget').remove();
+    }
+});
 
 test('DATA-API: data-provide="datepicker" on input; focus', function(){
     var input = $('<input data-provide="datepicker" />')

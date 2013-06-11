@@ -4,7 +4,7 @@ module('Calendar Weeks', {
             .appendTo('#qunit-fixture')
             .val('2013-01-14')
             .datepicker({
-                format: 'yyyy-mm-dd',
+                format: 'yyyy-MM-dd',
                 calendarWeeks: true
             })
             .focus(); // Activate for visibility checks

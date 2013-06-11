@@ -10,7 +10,7 @@ module('Keyboard Navigation 2012', {
         */
         this.input = $('<input type="text" value="31-03-2012">')
                         .appendTo('#qunit-fixture')
-                        .datepicker({format: "dd-mm-yyyy"})
+                        .datepicker({format: "dd-MM-yyyy"})
                         .focus(); // Activate for visibility checks
         this.dp = this.input.data('datepicker')
         this.picker = this.dp.picker;
@@ -366,7 +366,8 @@ test('Selection (enter)', function(){
     target = this.picker.find('.datepicker-days thead th.datepicker-switch');
     equal(target.text(), 'March 2012', 'Title is "March 2012"');
 
-    ok(this.picker.is(':not(:visible)'), 'Picker is hidden');
+    ok(!this.picker.find('.collapse:eq(0)').is('.in'), 'Date Picker is hidden');
+	ok(this.picker.find('.collapse:eq(1)').is('.in'),'Time picker is shown');
 });
 
 test('Toggle hide/show (escape); navigation while hidden is suppressed', function(){
@@ -407,4 +408,3 @@ test('Toggle hide/show (escape); navigation while hidden is suppressed', functio
     datesEqual(this.dp.viewDate, UTCDate(2012, 2, 31));
     datesEqual(this.dp.date, UTCDate(2012, 2, 31));
 });
-

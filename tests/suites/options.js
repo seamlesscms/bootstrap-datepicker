@@ -1,7 +1,6 @@
 module('Options', {
     setup: function(){},
     teardown: function(){
-        return
         $('#qunit-fixture *').each(function(){
             var t = $(this);
             if ('datepicker' in t.data())
@@ -15,7 +14,7 @@ test('Autoclose', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     autoclose: true
                 }),
         dp = input.data('datepicker'),
@@ -39,7 +38,7 @@ test('Startview: year view (integer)', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     startView: 1
                 }),
         dp = input.data('datepicker'),
@@ -57,7 +56,7 @@ test('Startview: year view (string)', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     startView: 'year'
                 }),
         dp = input.data('datepicker'),
@@ -75,7 +74,7 @@ test('Startview: decade view (integer)', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     startView: 2
                 }),
         dp = input.data('datepicker'),
@@ -93,7 +92,7 @@ test('Startview: decade view (string)', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     startView: 'decade'
                 }),
         dp = input.data('datepicker'),
@@ -111,7 +110,7 @@ test('Today Button: today button not default', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd'
+                    format: 'yyyy-MM-dd'
                 }),
         dp = input.data('datepicker'),
         picker = dp.picker,
@@ -127,7 +126,7 @@ test('Today Button: today visibility when enabled', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     todayBtn: true
                 }),
         dp = input.data('datepicker'),
@@ -152,7 +151,7 @@ test('Today Button: data-api', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd'
+                    format: 'yyyy-MM-dd'
                 }),
         dp = input.data('datepicker'),
         picker = dp.picker,
@@ -168,7 +167,7 @@ test('Today Button: moves to today\'s date', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     todayBtn: true
                 }),
         dp = input.data('datepicker'),
@@ -193,7 +192,7 @@ test('Today Button: "linked" selects today\'s date', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     todayBtn: "linked"
                 }),
         dp = input.data('datepicker'),
@@ -219,7 +218,7 @@ test('Today Highlight: today\'s date is not highlighted by default', patch_date(
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd'
+                    format: 'yyyy-MM-dd'
                 }),
         dp = input.data('datepicker'),
         picker = dp.picker,
@@ -243,7 +242,7 @@ test('Today Highlight: today\'s date is highlighted when not active', patch_date
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     todayHighlight: true
                 }),
         dp = input.data('datepicker'),
@@ -267,7 +266,7 @@ test('Clear Button: clear visibility when enabled', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     clearBtn: true
                 }),
         dp = input.data('datepicker'),
@@ -292,7 +291,7 @@ test('Clear Button: clears input value', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     clearBtn: true
                 }),
         dp = input.data('datepicker'),
@@ -315,7 +314,7 @@ test('Clear Button: hides datepicker if autoclose is on', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     clearBtn: true,
                     autoclose: true
                 }),
@@ -340,7 +339,7 @@ test('DaysOfWeekDisabled', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-10-26')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     daysOfWeekDisabled: '1,5'
                 }),
         dp = input.data('datepicker'),
@@ -384,7 +383,7 @@ test('BeforeShowDay', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-10-26')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
+                    format: 'yyyy-MM-dd',
                     beforeShowDay: beforeShowDay
                 }),
         dp = input.data('datepicker'),

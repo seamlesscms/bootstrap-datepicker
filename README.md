@@ -1,19 +1,17 @@
-# [bootstrap-datepicker](http://eternicode.github.com/bootstrap-datepicker/) [![Build Status](https://travis-ci.org/eternicode/bootstrap-datepicker.png?branch=master)](https://travis-ci.org/eternicode/bootstrap-datepicker)
+# [bootstrap-datepicker](http://seamlesscms.github.com/bootstrap-datepicker/) [![Build Status](https://travis-ci.org/seamlesscms/bootstrap-datepicker.png?branch=master)](https://travis-ci.org/seamlesscms/bootstrap-datepicker)
 
-This is a fork of Stefan Petre's [original code](http://www.eyecon.ro/bootstrap-datepicker/);
-thanks go to him for getting this thing started!
-
-Please note that this fork is not used on Stefan's page at this time, nor is it maintained or
-contributed to by him (yet?)
-
-Versions are incremented according to [semver](http://semver.org/).
+This is a fork of [Bootstrap-DatePicker](http://eternicode.github.com/bootstrap-datepicker/)
 
 # Requirements
 
 * [Bootstrap](http://twitter.github.com/bootstrap/) 2.0.4+
 * [jQuery](http://jquery.com/) 1.7.1+
 
-These are the specific versions bootstrap-datpicker is tested against (`js` files) and built against (`css` files).  Use other versions at your own risk.
+These are the specific versions bootstrap-datpicker is tested against (`js` files) and built against (`css` files).  
+Use other versions at your own risk.
+
+# What's Diff??
+This version also supports the time, with the code merged from [tarruda's bootstrap-datetimepicker](https://tarruda.github.com/bootstrap-datetimepicker)
 
 # Example
 
@@ -159,13 +157,15 @@ Most options can be provided via data-attributes.  An option can be converted to
 
 String.  Default: 'mm/dd/yyyy'
 
-The date format, combination of d, dd, D, DD, m, mm, M, MM, yy, yyyy.
+Date time format strings follow the [MSDN's format specifier](http://msdn.microsoft.com/en-us/library/8kb3ddd4.aspx).
 
-* d, dd: Numeric date, no leading zero and leading zero, respectively.  Eg, 5, 05.
-* D, DD: Abbreviated and full weekday names, respectively.  Eg, Mon, Monday.
-* m, mm: Numeric month, no leading zero and leading zero, respectively.  Eg, 7, 07.
-* M, MM: Abbreviated and full month names, respectively.  Eg, Jan, January
-* yy, yyyy: 2- and 4-digit years, respectively.  Eg, 12, 2012.
+Formatting for following values are not supported.
+ * fraction of seconds
+ * period
+ * time zone
+ * AM/PM designator
+ * Hour offset
+ * And special format characters like (':','/','%','\')
 
 ### weekStart
 

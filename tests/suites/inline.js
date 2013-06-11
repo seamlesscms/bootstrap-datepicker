@@ -2,7 +2,7 @@ module('Inline', {
     setup: function(){
         this.component = $('<div data-date="12-02-2012"></div>')
                         .appendTo('#qunit-fixture')
-                        .datepicker({format: "dd-mm-yyyy"});
+                        .datepicker({format: "dd-MM-yyyy"});
         this.dp = this.component.data('datepicker')
         this.picker = this.dp.picker;
     },
@@ -18,8 +18,8 @@ test('Picker gets date/viewDate from data-date attr', function(){
 });
 
 
-test('Visible after init', function(){
-    ok(this.picker.is(':visible'));
+test('Not visible after init', function(){
+    ok(!this.picker.is(':visible'));
 });
 
 test('update', function(){
