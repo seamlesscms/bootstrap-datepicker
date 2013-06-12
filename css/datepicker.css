@@ -491,14 +491,17 @@
     list-style-type:none;
     margin:0
 }
+.bootstrap-datetimepicker-widget>ul>li.active {
+	outline:1px dotted #ccc;
+}
 .bootstrap-datetimepicker-widget .timepicker-hour, .bootstrap-datetimepicker-widget .timepicker-minute, .bootstrap-datetimepicker-widget .timepicker-second {
     width:100%;
     font-weight:bold;
     font-size:1.2em
 }
-.bootstrap-datetimepicker-widget .timepicker-hour.focused,
-.bootstrap-datetimepicker-widget .timepicker-minute.focused,
-.bootstrap-datetimepicker-widget .timepicker-second.focused {
+.bootstrap-datetimepicker-widget .active .timepicker-hour.focused,
+.bootstrap-datetimepicker-widget .active .timepicker-minute.focused,
+.bootstrap-datetimepicker-widget .active .timepicker-second.focused {
   outline:2px dotted rgb(255, 163, 0);
 }
 .bootstrap-datetimepicker-widget table[data-hour-format="12"] .separator {

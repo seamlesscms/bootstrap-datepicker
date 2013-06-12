@@ -9,13 +9,38 @@ module('Options', {
     }
 });
 
-test('Autoclose', function(){
+test('No Autoclose with time picker', function(){
     var input = $('<input />')
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
                     format: 'yyyy-MM-dd',
                     autoclose: true
+                }),
+        dp = input.data('datepicker'),
+        picker = dp.picker,
+        target;
+
+
+    input.focus();
+    ok(picker.is(':visible'), 'Picker is visible');
+    target = picker.find('.datepicker-days tbody td:nth(7)');
+    equal(target.text(), '4'); // Mar 4
+
+    target.click();
+    ok(picker.is(':visible'), 'Picker is visible');
+    datesEqual(dp.date, UTCDate(2012, 2, 4));
+    datesEqual(dp.viewDate, UTCDate(2012, 2, 4));
+});
+
+test('Autoclose when no time picker', function(){
+    var input = $('<input />')
+                .appendTo('#qunit-fixture')
+                .val('2012-03-05')
+                .datepicker({
+                    format: 'yyyy-MM-dd',
+                    autoclose: true,
+					pickTime: false
                 }),
         dp = input.data('datepicker'),
         picker = dp.picker,
@@ -405,3 +430,131 @@ test('BeforeShowDay', function(){
     target = picker.find('.datepicker-days tbody td:nth(29)');
     ok(!target.hasClass('disabled'), '29th is enabled');
 });
+
+test('No collapse and Keyboard navigation', function(){
+    var input = $('<input />')
+                .appendTo('#qunit-fixture')
+                .val('20-06-2013 14:05:20')
+                .datepicker({
+                    format: 'dd-MM-yyyy hh:mm:ss',
+                    collapse:false
+                }),
+        dp = input.data('datepicker'),
+        picker = dp.picker,
+        target;
+
+	input.focus();
+	
+    ok(picker.is(':visible'), 'Picker is visible');
+
+	// Up Arrow
+    input.trigger({
+        type: 'keydown',
+        keyCode: 38
+    });
+	equal(input.val(),'13-06-2013 14:05:20');
+	
+	// Down Arrow
+    input.trigger({
+        type: 'keydown',
+        keyCode: 40
+    });
+	equal(input.val(),'20-06-2013 14:05:20');
+	
+	// Enter
+    input.trigger({
+        type: 'keydown',
+        keyCode: 13
+    });
+	equal(picker.find('.active .timepicker').length,1);
+	
+	// Hours is focused
+	equal(picker.find('.timepicker-picker td .focused').text(),'14');
+	
+	// Right Arrow
+    input.trigger({
+        type: 'keydown',
+        keyCode: 39
+    });
+	// Minutes is focused
+	equal(picker.find('.timepicker-picker td .focused').text(),'05');
+	
+	// Up Arrow
+    input.trigger({
+        type: 'keydown',
+        keyCode: 38
+    });
+	equal(input.val(),'20-06-2013 14:06:20');
+	
+	// Down Arrow
+    input.trigger({
+        type: 'keydown',
+        keyCode: 40
+    });
+	equal(input.val(),'20-06-2013 14:05:20');
+	
+	// Right Arrow
+    input.trigger({
+        type: 'keydown',
+        keyCode: 39
+    });
+	// Seconds is focused
+	equal(picker.find('.timepicker-picker td .focused').text(),'20');
+	
+	// Up Arrow
+    input.trigger({
+        type: 'keydown',
+        keyCode: 38
+    });
+	equal(input.val(),'20-06-2013 14:05:21');
+	
+	// Down Arrow
+    input.trigger({
+        type: 'keydown',
+        keyCode: 40
+    });
+	equal(input.val(),'20-06-2013 14:05:20');
+	
+	// Right Arrow
+    input.trigger({
+        type: 'keydown',
+        keyCode: 39
+    });
+	// Hour is focused
+	equal(picker.find('.timepicker-picker td .focused').text(),'14');
+	
+	// Left Arrow
+    input.trigger({
+        type: 'keydown',
+        keyCode: 37
+    });
+	// Hour is focused
+	equal(picker.find('.timepicker-picker td .focused').text(),'20');
+	
+	// Left Arrow
+    input.trigger({
+        type: 'keydown',
+        keyCode: 37
+    });
+	// Hour is focused
+	equal(picker.find('.timepicker-picker td .focused').text(),'05');
+	
+	// Left Arrow
+    input.trigger({
+        type: 'keydown',
+        keyCode: 37
+    });
+	// Hour is focused
+	equal(picker.find('.timepicker-picker td .focused').text(),'14');
+	
+	// Escape
+    input.trigger({
+        type: 'keydown',
+        keyCode: 9
+    });
+
+    ok(picker.is(':not(:visible)'), 'Picker is hidden');
+	
+	equal(input.val(),'20-06-2013 14:05:20');
+});
+

@@ -41,14 +41,21 @@
 
         this._process_options(options);
 
-        this.picker = $(getTemplate(this.o.timeIcon, options.pickDate, options.pickTime, options.pick12HourFormat, options.pickSeconds, options.collapse)).appendTo('body');
+		if(!this.o.pickDate && !this.o.pickTime) {
+			return false;
+		}
+		
+        this.picker = $(getTemplate(this.o.timeIcon, this.o.pickDate, this.o.pickTime, this.o.pick12HourFormat, this.o.pickSeconds, this.o.collapse, this.o.keyboardNavigation)).appendTo('body');
+		if(this.o.pickTime && this.o.keyboardNavigation) {
+			this.picker.find('.timepicker-picker [data-time-component]:eq(0)').addClass('focused');
+		}
         this._buildEvents();
         this._attachEvents();
 
         this.viewMode = this.o.startView;
 
         if (this.o.calendarWeeks)
-            this.picker.find('tfoot th.today')
+            this.picker.find('tfoot th.today, tfoot th.clear')
 						.attr('colspan', function (i, val) {
 						    return parseInt(val) + 1;
 						});
@@ -255,16 +262,21 @@
         },
         togglePicker: function (e) {
             e.stopPropagation();
-            var expanded = this.picker.find('.collapse.in');
-            var closed = this.picker.find('.collapse:not(.in)');
+			if(this.o.collapse) {
+				var expanded = this.picker.find('.collapse.in');
+				var closed = this.picker.find('.collapse:not(.in)');
 
-            if (expanded && expanded.length) {
-                var collapseData = expanded.data('collapse');
-                if (collapseData && collapseData.transitioning) return;
-                expanded.collapse('hide');
-                closed.collapse('show')
-                this.element.find('> .add-on > i').toggleClass(this.o.timeIcon + ' ' + this.o.dateIcon);
-            }
+				if (expanded && expanded.length) {
+					var collapseData = expanded.data('collapse');
+					if (collapseData && collapseData.transitioning) return;
+					expanded.collapse('hide');
+					closed.collapse('show')
+					this.element.find('> .add-on > i').toggleClass(this.o.timeIcon + ' ' + this.o.dateIcon);
+				}
+			}
+			if(this.o.keyboardNavigation) {
+				this.picker.find('> ul > li:not(.picker-switch)').toggleClass('active');
+			}
         },
         _attachEvents: function () {
             this._detachEvents();
@@ -477,7 +489,7 @@
             var cls = [],
 				year = this.viewDate.getUTCFullYear(),
 				month = this.viewDate.getUTCMonth(),
-				currentDate = this.date.valueOf(),
+				currentDate = this.date,
 				today = new Date();
             if (date.getUTCFullYear() < year || (date.getUTCFullYear() == year && date.getUTCMonth() < month)) {
                 cls.push('old');
@@ -491,7 +503,10 @@
 				date.getUTCDate() == today.getDate()) {
                 cls.push('today');
             }
-            if (currentDate && date.valueOf() == currentDate) {
+            if (currentDate && 
+				date.getUTCFullYear() == currentDate.getUTCFullYear() &&
+				date.getUTCMonth() == currentDate.getUTCMonth() &&
+				date.getUTCDate() == currentDate.getUTCDate()) {
                 cls.push('active');
             }
             if (date.valueOf() < this.o.startDate || date.valueOf() > this.o.endDate ||
@@ -533,7 +548,7 @@
             this.picker.find('.datepicker-months').find('.disabled').removeClass('disabled');
             this.picker.find('.datepicker-years').find('.disabled').removeClass('disabled');
 
-            this.picker.find('.datepicker-days th:eq(1)').text(
+            this.picker.find('.datepicker-days th.datepicker-switch').text(
                 dates[this.o.language].months[month] + ' ' + year);
             this.picker.find('tfoot th.today')
 						.text(dates[this.o.language].today)
@@ -953,7 +968,7 @@
             }
             if (element) {
                 element.change();
-                if (this.o.autoclose && (!which || which == 'date')) {
+                if (this.o.autoclose && (!which || which == 'date') && !this.o.pickTime) {
                     this.hide();
                 }
             }
@@ -1136,7 +1151,7 @@
 				dir, day, month,
 				newDate, newViewDate;
 
-            var keydownDelegate = this.picker.find(((this.o.pickDate && this.o.pickTime)?'.in.collapse ':'')+ 'div:visible > table').data('keydown');
+            var keydownDelegate = this.picker.find('> ul > li.active div:visible > table, > div.active > div:visible > table').data('keydown');
             if (keydownDelegate) {
                 dateChanged = keydownDelegate.call(this, e);
             }
@@ -1655,12 +1670,12 @@
         else return Array(l - s.length + 1).join(c || ' ') + s;
     }
 
-    function getTemplate(timeIcon, pickDate, pickTime, is12Hours, showSeconds, collapse) {
+    function getTemplate(timeIcon, pickDate, pickTime, is12Hours, showSeconds, collapse, keyboardNavigation) {
         if (pickDate && pickTime) {
             return (
         '<div class="bootstrap-datetimepicker-widget dropdown-menu">' +
           '<ul>' +
-            '<li' + (collapse ? ' class="collapse in"' : '') + '>' +
+            '<li class="' + (collapse ? 'collapse in' : '') + (keyboardNavigation ? ' active' : '') + '">' +
               '<div class="datepicker">' +
                 DPGlobal.template +
               '</div>' +
@@ -1677,7 +1692,7 @@
         } else if (pickTime) {
             return (
         '<div class="bootstrap-datetimepicker-widget dropdown-menu">' +
-          '<div class="timepicker">' +
+          '<div class="timepicker ' + (keyboardNavigation ? ' active' : '') + '">' +
             TPGlobal.getTemplate(is12Hours, showSeconds) +
           '</div>' +
         '</div>'
@@ -1685,7 +1700,7 @@
         } else {
             return (
         '<div class="bootstrap-datetimepicker-widget dropdown-menu">' +
-          '<div class="datepicker">' +
+          '<div class="datepicker ' + (keyboardNavigation ? ' active' : '') + '">' +
             DPGlobal.template +
           '</div>' +
         '</div>'
@@ -1761,7 +1776,7 @@
 						'</div>';
 
     var TPGlobal = {
-        hourTemplate: '<span data-action="showHours" data-time-component="hours" class="timepicker-hour focused"></span>',
+        hourTemplate: '<span data-action="showHours" data-time-component="hours" class="timepicker-hour"></span>',
         minuteTemplate: '<span data-action="showMinutes" data-time-component="minutes" class="timepicker-minute"></span>',
         secondTemplate: '<span data-action="showSeconds" data-time-component="seconds" class="timepicker-second"></span>'
     };
