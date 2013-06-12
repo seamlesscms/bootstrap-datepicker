@@ -18,7 +18,7 @@ window.patch_date = function patch(f){
     return function(){
         Array.prototype.push.call(arguments, date);
         window.Date = date;
-        res = f.apply(this, arguments);
+        f.apply(this, arguments);
         window.Date = NativeDate;
     }
 }

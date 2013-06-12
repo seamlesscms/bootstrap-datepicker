@@ -28,6 +28,10 @@
         var today = new Date();
         return UTCDate(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
     }
+    function UTCNow() {
+        var today = new Date();
+        return UTCDate(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), today.getUTCHours(), today.getUTCMinutes(), today.getUTCSeconds());
+    }
 
     // Picker object
 
@@ -419,8 +423,9 @@
             }
 
             this.date = this.parseDate(date) || this.date;
-            if (!this.date)
-                this.date = new Date();
+            if (!this.date) {
+				this.date = UTCToday();
+			}
 
             if (fromArgs) this.setValue();
 
@@ -508,8 +513,7 @@
 
             var year = this.viewDate.getUTCFullYear();
             var month = this.viewDate.getUTCMonth();
-            var currentDate = new Date(), today = new Date(), tooltip;
-			today = UTCDate(today.getFullYear(), today.getMonth(),today.getDate(),0,0,0);
+            var currentDate = new Date(), tooltip, today = UTCToday();
 			
             if (this.date) {
                 var currentDate = UTCDate(
@@ -735,7 +739,7 @@
 				if (!this.o.keyboardNavigation) return;
 
                 var dateChanged = false, dir, newDate, newViewDate;
-                switch (e.which) {
+                switch (e.keyCode) {
 					case 13: // enter
 						if(this.o.pickDate) {
 							this.togglePicker(e);
@@ -860,12 +864,9 @@
                                 this.fillTime();
                                 break;
                             case 'today':
-                                var date = new Date();
-                                date = UTCDate(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
-
                                 this.showMode(-2);
                                 var which = this.o.todayBtn == 'linked' ? null : 'view';
-                                this._setDate(date, which);
+                                this._setDate(UTCToday(), which);
                                 break;
                             case 'clear':
                                 if (this.isInput)
@@ -1135,7 +1136,7 @@
 				dir, day, month,
 				newDate, newViewDate;
 
-            var keydownDelegate = this.picker.find('.in.collapse div:visible > table').data('keydown');
+            var keydownDelegate = this.picker.find(((this.o.pickDate && this.o.pickTime)?'.in.collapse ':'')+ 'div:visible > table').data('keydown');
             if (keydownDelegate) {
                 dateChanged = keydownDelegate.call(this, e);
             }
