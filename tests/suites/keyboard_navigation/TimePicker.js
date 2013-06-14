@@ -3,7 +3,7 @@ module('Keyboard Navigation (TimePicker)', {
         this.input = $('<input type="text">')
 						.val('14:05:20')
                         .appendTo('#qunit-fixture')
-                        .datepicker({format: "hh:mm:ss",pickDate:false})
+                        .datepicker({format: "HH:mm:ss",pickDate:false})
                         .focus(); // Activate for visibility checks
         this.dp = this.input.data('datepicker')
         this.picker = this.dp.picker;

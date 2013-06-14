@@ -436,7 +436,7 @@ test('No collapse and Keyboard navigation', function(){
                 .appendTo('#qunit-fixture')
                 .val('20-06-2013 14:05:20')
                 .datepicker({
-                    format: 'dd-MM-yyyy hh:mm:ss',
+                    format: 'dd-MM-yyyy HH:mm:ss',
                     collapse:false
                 }),
         dp = input.data('datepicker'),

@@ -88,6 +88,54 @@ test('yyyy: Year, four-digit.', function(){
     equal(this.input.val().split('-')[0], '2012');
 });
 
+test('h: Hour 12hr format, one-digit.', function(){
+    this.input
+        .val('2012-03-05 2:05:20')
+        .datepicker({format: 'yyyy-MM-dd h:mm:ss'})
+        .datepicker('setValue');
+    equal(this.input.val().split(' ')[1].split(':')[0], '2');
+});
+
+test('hh: Hour 12hr format, two-digit.', function(){
+    this.input
+        .val('2012-03-05 02:05:20')
+        .datepicker({format: 'yyyy-MM-dd hh:mm:ss'})
+        .datepicker('setValue');
+    equal(this.input.val().split(' ')[1].split(':')[0], '02');
+});
+
+test('H: Hour 24hr format, one-digit.', function(){
+    this.input
+        .val('2012-03-05 4:05:20')
+        .datepicker({format: 'yyyy-MM-dd H:mm:ss'})
+        .datepicker('setValue');
+    equal(this.input.val().split(' ')[1].split(':')[0], '4');
+});
+
+test('HH: Hour 24hr format, two-digit.', function(){
+    this.input
+        .val('2012-03-05 14:05:20')
+        .datepicker({format: 'yyyy-MM-dd HH:mm:ss'})
+        .datepicker('setValue');
+    equal(this.input.val().split(' ')[1].split(':')[0], '14');
+});
+
+test('t: Meridian format, one character.', function(){
+    this.input
+        .val('2012-03-05 4:05:20 A')
+        .datepicker({format: 'yyyy-MM-dd H:mm:ss t'})
+        .datepicker('setValue');
+    equal(this.input.val().split(' ')[2], 'A');
+});
+
+test('tt: Meridian format, two character.', function(){
+    this.input
+        .val('2012-03-05 14:05:20 PM')
+        .datepicker({format: 'yyyy-MM-dd HH:mm:ss tt'})
+        .datepicker('setValue');
+    equal(this.input.val().split(' ')[2], 'PM');
+});
+
 test('dd-MM-yyyy: Regression: Prevent potential month overflow in small-to-large formats (Mar 31, 2012 -> Mar 01, 2012)', function(){
     this.input
         .val('31-03-2012')
@@ -196,7 +244,7 @@ test('+1h: Next Hour', patch_date(function(Date){
     Date.now = UTCDate(2012, 2, 15, 2, 0, 0);
     this.input
         .val('+1h')
-        .datepicker({format: 'dd-MM-yyyy hh:mm:ss'})
+        .datepicker({format: 'dd-MM-yyyy HH:mm:ss'})
         .datepicker('setValue');
     equal(this.input.val(), '15-03-2012 03:00:00');
 }));
@@ -205,7 +253,7 @@ test('-1h: Last Hour', patch_date(function(Date){
     Date.now = UTCDate(2012, 2, 15, 2, 0, 0);
     this.input
         .val('-1h')
-        .datepicker({format: 'dd-MM-yyyy hh:mm:ss'})
+        .datepicker({format: 'dd-MM-yyyy HH:mm:ss'})
         .datepicker('setValue');
     equal(this.input.val(), '15-03-2012 01:00:00');
 }));
@@ -214,7 +262,7 @@ test('+1m: Next Minute', patch_date(function(Date){
     Date.now = UTCDate(2012, 2, 15, 2, 0, 0);
     this.input
         .val('+1m')
-        .datepicker({format: 'dd-MM-yyyy hh:mm:ss'})
+        .datepicker({format: 'dd-MM-yyyy HH:mm:ss'})
         .datepicker('setValue');
     equal(this.input.val(), '15-03-2012 02:01:00');
 }));
@@ -223,7 +271,7 @@ test('-1m: Last Minute', patch_date(function(Date){
     Date.now = UTCDate(2012, 2, 15, 2, 0, 0);
     this.input
         .val('-1m')
-        .datepicker({format: 'dd-MM-yyyy hh:mm:ss'})
+        .datepicker({format: 'dd-MM-yyyy HH:mm:ss'})
         .datepicker('setValue');
     equal(this.input.val(), '15-03-2012 02:59:00');
 }));
@@ -232,7 +280,7 @@ test('+1s: Next Second', patch_date(function(Date){
     Date.now = UTCDate(2012, 2, 15, 2, 0, 0);
     this.input
         .val('+1s')
-        .datepicker({format: 'dd-MM-yyyy hh:mm:ss'})
+        .datepicker({format: 'dd-MM-yyyy HH:mm:ss'})
         .datepicker('setValue');
     equal(this.input.val(), '15-03-2012 02:00:01');
 }));
@@ -241,7 +289,7 @@ test('-1s: Last Second', patch_date(function(Date){
     Date.now = UTCDate(2012, 2, 15, 2, 0, 0);
     this.input
         .val('-1s')
-        .datepicker({format: 'dd-MM-yyyy hh:mm:ss'})
+        .datepicker({format: 'dd-MM-yyyy HH:mm:ss'})
         .datepicker('setValue');
     equal(this.input.val(), '15-03-2012 02:00:59');
 }));
@@ -250,7 +298,7 @@ test('-1y +2M +3h: Multiformat', patch_date(function(Date){
     Date.now = UTCDate(2012, 2, 15, 3);
     this.input
         .val('-1y +2M +3h')
-        .datepicker({format: 'dd-MM-yyyy h'})
+        .datepicker({format: 'dd-MM-yyyy H'})
         .datepicker('setValue');
     equal(this.input.val(), '15-05-2011 6');
 }));

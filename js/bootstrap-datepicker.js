@@ -212,9 +212,15 @@
                 this._events = [
                 // For components that are not readonly, allow keyboard nav
 					[this.element.find('input'), {
-					    focus: $.proxy(this.show, this),
+					    focus: $.proxy(function() {
+							this.show();
+							this.element.toggleClass('active');
+						}, this),
 					    keyup: $.proxy(this.update, this),
-					    keydown: $.proxy(this.keydown, this)
+					    keydown: $.proxy(this.keydown, this),
+						blur: $.proxy(function() {
+							this.element.toggleClass('active');
+						},this)
 					}],
 					[this.component, {
 					    click: $.proxy(this.show, this)
@@ -314,6 +320,9 @@
 			
 			var wasClosed = this.picker.is(':visible');
             this.picker.show();
+			
+			if(this.o.pickTime)
+				this.actions.showPicker.call(this);
 			
             this.height = this.component ? this.component.outerHeight() : this.element.outerHeight();
             this.place();
@@ -443,8 +452,10 @@
 
             if (this.date < this.o.startDate) {
                 this.viewDate = new Date(this.o.startDate);
+				this.date = new Date(this.o.startDate);
             } else if (this.date > this.o.endDate) {
                 this.viewDate = new Date(this.o.endDate);
+				this.date = new Date(this.o.endDate);
             } else {
                 this.viewDate = new Date(this.date);
             }
@@ -694,12 +705,12 @@
             table.parent().hide();
             var html = '';
             var current = 0;
-            for (var i = 0; i < 5; i++) {
+            for (var i = 0; i < 3; i++) {
                 html += '<tr>';
                 for (var j = 0; j < 4; j += 1) {
                     var c = current.toString();
                     html += '<td class="minute">' + padLeft(c, 2, '0') + '</td>';
-                    current += 3;
+                    current += 5;
                 }
                 html += '</tr>';
             }
@@ -712,12 +723,12 @@
             table.parent().hide();
             var html = '';
             var current = 0;
-            for (var i = 0; i < 5; i++) {
+            for (var i = 0; i < 3; i++) {
                 html += '<tr>';
                 for (var j = 0; j < 4; j += 1) {
                     var c = current.toString();
                     html += '<td class="second">' + padLeft(c, 2, '0') + '</td>';
-                    current += 3;
+                    current += 5;
                 }
                 html += '</tr>';
             }
@@ -1268,23 +1279,16 @@
 				if (getValue != undefined) {
 					return getValue(d,language);
 				}
-                if (property === 'Hours12') {
-                    rv = d.getUTCHours();
-                    if (rv === 0) rv = 12;
-                    else if (rv !== 12) rv = rv % 12;
-                } else if (property === 'Period12') {
-                    if (d.getUTCHours() >= 12) return 'PM';
-                    else return 'AM';
-                } else {
-                    methodName = 'get' + property;
-                    rv = d[methodName]();
-                }
+				methodName = 'get' + property;
+				rv = d[methodName]();
                 if (methodName === 'getUTCMonth') rv = rv + 1;
                 return padLeft(rv.toString(), len, '0');
             });
         },
 
         parseDate: function (str) {
+			if(str instanceof Date) return str;
+			
             var match, i, property, methodName, value, parsed = {};
             if (!(match = this._formatPattern.exec(str))) {
 				// if the format pattern does not match, check if its a difference string pattern
@@ -1356,16 +1360,6 @@
             minutes = parsed.UTCMinutes || 0;
             seconds = parsed.UTCSeconds || 0;
             milliseconds = parsed.UTCMilliseconds || 0;
-            if (parsed.Hours12) {
-                hours = parsed.Hours12;
-            }
-            if (parsed.Period12) {
-                if (/pm/i.test(parsed.Period12)) {
-                    if (hours != 12) hours = (hours + 12) % 24;
-                } else {
-                    hours = hours % 12;
-                }
-            }
             return UTCDate(year, month, date, hours, minutes, seconds, milliseconds);
         },
 
@@ -1548,8 +1542,7 @@
         pickDate: true,
         pickTime: true,
         pick12HourFormat: false,
-        pickSeconds: true,
-        maskInput: false
+        pickSeconds: true
     };
     $.fn.datepicker.locale_opts = [
 		'format',
@@ -1564,6 +1557,7 @@
             daysMin: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
             months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
             monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+			meridian: ["AM", "PM"],
             today: "Today",
             clear: "Clear"
         }
@@ -1605,10 +1599,26 @@
 				}
 			},
         yyyy: { property: 'UTCFullYear', getPattern: function () { return '(\\d{4})\\b'; } },
-        h:  { property: 'UTCHours', getPattern: function () { return '([0-9]|1[0-9]|2[0-3])\\b'; } },
-        hh: { property: 'UTCHours', getPattern: function () { return '(0?[0-9]|1[0-9]|2[0-3])\\b'; } },
-        H:  { property: 'Hours12', getPattern: function () { return '([0-9]|1[0-2])\\b'; } },
-        HH: { property: 'Hours12', getPattern: function () { return '(0?[1-9]|1[0-2])\\b'; } },
+        H:  { property: 'UTCHours', getPattern: function () { return '([0-9]|1[0-9]|2[0-3])\\b'; } },
+        HH: { property: 'UTCHours', getPattern: function () { return '(0?[0-9]|1[0-9]|2[0-3])\\b'; } },
+        h:  { 
+				property: 'UTCHours', 
+				getPattern: function () { return '([0-9]|1[0-2])\\b'; },
+				getValue: function(d,language) { 
+					var h = d.getUTCHours();
+					if(h === 0) return 12;
+					else return h%12;
+				}
+			},
+        hh: { 
+				property: 'UTCHours', 
+				getPattern: function () { return '(0?[1-9]|1[0-2])\\b'; },
+				getValue: function(d,language) { 
+					var h = d.getUTCHours();
+					if(h === 0) return '12';
+					else return padLeft((h%12).toString(), 2, '0');
+				}
+			},
         m:  { property: 'UTCMinutes', getPattern: function () { return '([0-9]|[1-5][0-9])\\b'; } },
         mm: { property: 'UTCMinutes', getPattern: function () { return '(0?[0-9]|[1-5][0-9])\\b'; } },
         M:  { 
@@ -1648,7 +1658,30 @@
 			},
         ss: { property: 'UTCSeconds', getPattern: function () { return '(0?[0-9]|[1-5][0-9])\\b'; } },
         ms: { property: 'UTCMilliseconds', getPattern: function () { return '([0-9]{1,3})\\b'; } },
-        PP: { property: 'Period12', getPattern: function () { return '(AM|PM|am|pm|Am|aM|Pm|pM)\\b'; } }
+        t:  { 
+				property: 'Period', 
+				getPattern: function (that) { 
+					var meridianLetters = [];
+					for(i=0;i<dates[that.o.language].meridian.length;i++) {
+						meridianLetters.push(dates[that.o.language].meridian[i].charAt(0));
+					}
+					return '('+meridianLetters.join('|')+')\\b';
+				},
+				getValue: function(d,language) {
+					var h = d.getUTCHours();
+					return dates[language].meridian[((h >= 12)?1:0)].charAt(0);
+				}
+			},
+        tt: { 
+				property: 'Period', 
+				getPattern: function (that) { 
+					return '('+dates[that.o.language].meridian.join('|')+')\\b';
+				},
+				getValue: function(d,language) {
+					var h = d.getUTCHours();
+					return dates[language].meridian[((h >= 12)?1:0)];
+				}
+			}
     };
 
     var keys = [];
