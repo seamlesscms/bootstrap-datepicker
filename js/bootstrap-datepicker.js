@@ -36,7 +36,6 @@
     // Picker object
 
     var Datepicker = function (element, options) {
-        var that = this;
         this.element = $(element);
 
         this._process_options(options);
@@ -273,7 +272,10 @@
 			// These are events which are attached only when the picker is hidden but not removed.
 			this._passiveEvents = [
 				[this.isInput ? this.element : this.element.find('input'), {
-					blur:$.proxy(this.setValue, this)
+					blur:$.proxy(function() {
+						if((this.isInput ? this.element : this.element.find('input')).val() !=='')
+							this.setValue();
+					}, this)
 				}]
 			];
         },
@@ -336,7 +338,7 @@
             if (!this.isInline)
                 this.picker.appendTo('body');
 			
-			var wasClosed = this.picker.is(':visible');
+			this.updateNavArrows();
             this.picker.show();
 			
 			if(this.o.pickTime)
@@ -559,16 +561,7 @@
 
             var year = this.viewDate.getUTCFullYear();
             var month = this.viewDate.getUTCMonth();
-            var currentDate = new Date(), tooltip, today = UTCToday();
-			
-            if (this.date) {
-                var currentDate = UTCDate(
-                this.date.getUTCFullYear(),
-                this.date.getUTCMonth(),
-                this.date.getUTCDate(),
-                0, 0, 0, 0
-              );
-            }
+            var tooltip;
 
             var startYear = typeof this.o.startDate === 'object' ? this.o.startDate.getUTCFullYear() : -Infinity;
             var startMonth = typeof this.o.startDate === 'object' ? this.o.startDate.getUTCMonth() : -1;
@@ -759,7 +752,6 @@
             if (!this.date)
                 return;
             var timeComponents = this.picker.find('.timepicker span[data-time-component]');
-            var table = timeComponents.closest('table');
             var is12HourFormat = this.o.pick12HourFormat;
             var hour = this.date.getUTCHours();
             var period = 'AM';
@@ -1180,8 +1172,7 @@
             }
 
             var dateChanged = false,
-				dir, day, month,
-				newDate, newViewDate;
+				dir, newDate, newViewDate;
 
             var keydownDelegate = this.picker.find('> ul > li.active div:visible > table, > div.active > div:visible > table').data('keydown');
             if (keydownDelegate) {
@@ -1256,6 +1247,7 @@
                         this.hide();
                         break;
                 }
+				this.updateNavArrows()
             }
 
             if (dateChanged) {
@@ -1310,7 +1302,7 @@
         parseDate: function (str) {
 			if(str instanceof Date) return str;
 			
-            var match, i, property, methodName, value, parsed = {};
+            var match, i, property, value, parsed = {};
             if (!(match = this._formatPattern.exec(str))) {
 				// if the format pattern does not match, check if its a difference string pattern
 				if (/^[\-+]\d+[dmMhswy]([\s,]+[\-+]\d+[dmMhswy])*$/.test(str)) {
@@ -1512,8 +1504,7 @@
     $.fn.datepicker = function (option) {
         var args = Array.apply(null, arguments);
         args.shift();
-        var internal_return,
-			this_return;
+        var internal_return;
         this.each(function () {
             var $this = $(this),
 				data = $this.data('datepicker'),
@@ -1617,7 +1608,7 @@
         yy: { 
 				property: 'UTCFullYear', 
 				getPattern: function () { return '(\\d{2})\\b' },
-				getValue: function(d,language) { 
+				getValue: function(d) { 
 					return (d.getUTCFullYear()%100);	// return only the last 2 digits of the year
 				},
 				parseValue: function(val) {
@@ -1630,7 +1621,7 @@
         h:  { 
 				property: 'UTCHours', 
 				getPattern: function () { return '([0-9]|1[0-2])\\b'; },
-				getValue: function(d,language) { 
+				getValue: function(d) { 
 					var h = d.getUTCHours();
 					if(h === 0 || h === 12) return 12;
 					else return h%12;
@@ -1639,7 +1630,7 @@
         hh: { 
 				property: 'UTCHours', 
 				getPattern: function () { return '(0?[1-9]|1[0-2])\\b'; },
-				getValue: function(d,language) { 
+				getValue: function(d) { 
 					var h = d.getUTCHours();
 					if(h === 0 || h === 12) return '12';
 					else return padLeft((h%12).toString(), 2, '0');
