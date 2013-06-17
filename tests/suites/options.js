@@ -381,6 +381,26 @@ test('DaysOfWeekDisabled', function(){
     ok(target.hasClass('disabled'), 'Day of week is disabled');
 });
 
+test('Today as start date', function(){
+    var input = $('<input />')
+                .appendTo('#qunit-fixture')
+                .datepicker({
+					pickTime:false,
+                    startDate: new Date()
+                }),
+        dp = input.data('datepicker'),
+        picker = dp.picker,
+        target;
+
+
+    input.focus();
+	ok(picker.find('.datepicker-days th.prev').css('visibility')==="hidden");
+    picker.find('.datepicker-days th.next').click();
+	ok(picker.find('.datepicker-days th.prev').css('visibility')!=="hidden");
+    picker.find('.datepicker-days th.prev').click();
+	ok(picker.find('.datepicker-days th.prev').css('visibility')==="hidden");
+});
+
 test('BeforeShowDay', function(){
 
     var beforeShowDay = function(date) {

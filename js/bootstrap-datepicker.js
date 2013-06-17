@@ -202,7 +202,10 @@
             if (this.isInput) { // single input
                 this._events = [
 					[this.element, {
-					    focus: $.proxy(this.show, this),
+					    focus: $.proxy(function() {
+							this.update();
+							this.show();
+						}, this),
 					    keyup: $.proxy(this.update, this),
 					    keydown: $.proxy(this.keydown, this)
 					}]
@@ -213,6 +216,7 @@
                 // For components that are not readonly, allow keyboard nav
 					[this.element.find('input'), {
 					    focus: $.proxy(function() {
+							this.update();
 							this.show();
 							this.element.toggleClass('active');
 						}, this),
@@ -265,6 +269,13 @@
                     'click': $.proxy(this.doAction, this)
                 }]
 			];
+			
+			// These are events which are attached only when the picker is hidden but not removed.
+			this._passiveEvents = [
+				[this.isInput ? this.element : this.element.find('input'), {
+					blur:$.proxy(this.setValue, this)
+				}]
+			];
         },
         togglePicker: function (e) {
             e.stopPropagation();
@@ -297,6 +308,13 @@
         },
         _detachSecondaryEvents: function () {
             this._unapplyEvents(this._secondaryEvents);
+        },
+        _attachPassiveEvents: function () {
+            this._detachPassiveEvents();
+            this._applyEvents(this._passiveEvents);
+        },
+        _detachPassiveEvents: function () {
+            this._unapplyEvents(this._passiveEvents);
         },
         _trigger: function (event, altdate) {
             var date = altdate || this.date, local_date = new Date();
@@ -338,6 +356,7 @@
             if (!this.picker.is(':visible')) return;
             this.picker.hide().detach();
             this._detachSecondaryEvents();
+			this._attachPassiveEvents();
             this.viewMode = this.o.startView;
             this.showMode();
 
@@ -356,6 +375,7 @@
             this.hide();
             this._detachEvents();
             this._detachSecondaryEvents();
+			this._detachPassiveEvents();
             this.picker.remove();
             delete this.element.data().datepicker;
             if (!this.isInput) {
@@ -550,10 +570,10 @@
               );
             }
 
-            var startYear = typeof this.startDate === 'object' ? this.startDate.getUTCFullYear() : -Infinity;
-            var startMonth = typeof this.startDate === 'object' ? this.startDate.getUTCMonth() : -1;
-            var endYear = typeof this.endDate === 'object' ? this.endDate.getUTCFullYear() : Infinity;
-            var endMonth = typeof this.endDate === 'object' ? this.endDate.getUTCMonth() : 12;
+            var startYear = typeof this.o.startDate === 'object' ? this.o.startDate.getUTCFullYear() : -Infinity;
+            var startMonth = typeof this.o.startDate === 'object' ? this.o.startDate.getUTCMonth() : -1;
+            var endYear = typeof this.o.endDate === 'object' ? this.o.endDate.getUTCFullYear() : Infinity;
+            var endMonth = typeof this.o.endDate === 'object' ? this.o.endDate.getUTCMonth() : 12;
 
             this.picker.find('.datepicker-days').find('.disabled').removeClass('disabled');
             this.picker.find('.datepicker-months').find('.disabled').removeClass('disabled');
@@ -888,6 +908,7 @@
                                 }
                                 this.fillDate();
                                 this.fillTime();
+								this.updateNavArrows();
                                 break;
                             case 'today':
                                 this.showMode(-2);
@@ -1357,6 +1378,11 @@
 			month = parsed.UTCMonth || 0;
             date = parsed.UTCDate || 1;
             hours = parsed.UTCHours || 0;
+			if(parsed.Period) {
+				hours = hours%12;
+				if(parsed.Period == 'PM')
+					hours += 12;
+			}
             minutes = parsed.UTCMinutes || 0;
             seconds = parsed.UTCSeconds || 0;
             milliseconds = parsed.UTCMilliseconds || 0;
@@ -1606,7 +1632,7 @@
 				getPattern: function () { return '([0-9]|1[0-2])\\b'; },
 				getValue: function(d,language) { 
 					var h = d.getUTCHours();
-					if(h === 0) return 12;
+					if(h === 0 || h === 12) return 12;
 					else return h%12;
 				}
 			},
@@ -1615,7 +1641,7 @@
 				getPattern: function () { return '(0?[1-9]|1[0-2])\\b'; },
 				getValue: function(d,language) { 
 					var h = d.getUTCHours();
-					if(h === 0) return '12';
+					if(h === 0 || h === 12) return '12';
 					else return padLeft((h%12).toString(), 2, '0');
 				}
 			},
