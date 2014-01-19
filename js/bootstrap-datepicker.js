@@ -26,7 +26,7 @@
     }
     function UTCToday() {
         var today = new Date();
-        return UTCDate(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
+        return UTCDate(today.getFullYear(), today.getMonth(), today.getDate());
     }
     function UTCNow() {
         var today = new Date();
