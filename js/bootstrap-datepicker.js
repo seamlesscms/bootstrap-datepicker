@@ -205,6 +205,10 @@
 							this.update();
 							this.show();
 						}, this),
+						click: $.proxy(function() {
+							this.update();
+							this.show();
+						}, this),
 					    keyup: $.proxy(this.update, this),
 					    keydown: $.proxy(this.keydown, this)
 					}]
@@ -215,6 +219,11 @@
                 // For components that are not readonly, allow keyboard nav
 					[this.element.find('input'), {
 					    focus: $.proxy(function() {
+							this.update();
+							this.show();
+							this.element.toggleClass('active');
+						}, this),
+						click: $.proxy(function() {
 							this.update();
 							this.show();
 							this.element.toggleClass('active');
@@ -258,6 +267,7 @@
 							this.picker.find(e.target).size()
 						)) {
 				            this.hide();
+							this._trigger('dateblur');
 				        }
 				    }, this)
 				}],
@@ -272,9 +282,14 @@
 			// These are events which are attached only when the picker is hidden but not removed.
 			this._passiveEvents = [
 				[this.isInput ? this.element : this.element.find('input'), {
-					blur:$.proxy(function() {
+					blur:$.proxy(function(e) {
 						if((this.isInput ? this.element : this.element.find('input')).val() !=='')
 							this.setValue();
+						
+						// Trigger the date blur only if the picker is not shown.
+						if(!this.picker.is(':visible')){
+							this._trigger('dateblur');
+						}
 					}, this)
 				}]
 			];
@@ -327,6 +342,7 @@
             this.element.trigger({
                 type: event,
                 date: local_date,
+				DatePicker: this,
                 format: $.proxy(function (altformat) {
                     var format = altformat || this.o.format;
                     return this.formatDate(date, this.o.language, format);
@@ -967,6 +983,12 @@
                             }
                             this._setDate(UTCDate(year, month, day, 0, 0, 0, 0));
 							if(!this.o.pickTime) {
+								// Move the focus back to the element and then hide it
+								if (this.isInput) {
+									this.element.focus();
+								} else if (this.component) {
+									this.element.find('input').focus();
+								}
 								this.hide();
 							}
                         }
@@ -1915,7 +1937,7 @@
         $('[data-provide="datepicker-inline"]').datepicker();
     });
 
-} (window.jQuery);
+} (jQuery);
 
 // PolyFill for Array.indexOf so it doesn't throw error in <IE9
 // Thanks to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf
