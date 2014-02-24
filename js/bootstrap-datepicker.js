@@ -226,7 +226,9 @@
 						click: $.proxy(function() {
 							this.update();
 							this.show();
-							this.element.toggleClass('active');
+							if(!this.element.is('.active')){
+								this.element.addClass('active');
+							}
 						}, this),
 					    keyup: $.proxy(this.update, this),
 					    keydown: $.proxy(this.keydown, this),
